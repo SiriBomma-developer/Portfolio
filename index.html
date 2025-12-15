@@ -8,201 +8,460 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     :root{
-      --bg:#0e1116; --surface:#11151c; --card:#151a22; --muted:#8aa0b4; --text:#e9eef3;
-      --accent:#1ea0ff; --accent-2:#2dd4bf; --line:#354150;
-      --shadow:0 10px 30px rgba(0,0,0,.4); --radius:18px;
+      --bg:#0e1116; --surface:#11151c; --card:#151a22; --muted:#8aa0b4; --text:#e9eef3; --accent:#1ea0ff; --accent-2:#2dd4bf; --line:#354150; --shadow:0 10px 30px rgba(0,0,0,.4); --radius:18px;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
     a{color:var(--accent);text-decoration:none}
     img{max-width:100%;display:block}
+
+    /* ---------- Preloader ---------- */
+    #preloader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:9999;opacity:1;transition:opacity .6s ease}
+    #preloader.fade-out{opacity:0;pointer-events:none}
+    .loader{width:120px;height:120px;border-radius:28px;display:grid;place-items:center;position:relative;background:linear-gradient(145deg,#0b0e13,#141a22);box-shadow:inset 0 0 0 2px #1b232f,0 10px 30px rgba(0,0,0,.5)}
+    .loader i{font-size:54px;color:var(--accent)}
+    .spin-ring{position:absolute;inset:-14px;border-radius:32px;border:3px solid transparent;border-top-color:var(--accent);border-right-color:var(--accent-2);animation:spin 1.2s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ---------- Header ---------- */
+    header{position:sticky;top:0;z-index:900;background:rgba(17,21,28,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 28px}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.5px}
+    .brand i{color:var(--accent);font-size:22px}
+    .menu{display:flex;gap:28px;align-items:center;margin-left:auto}
+    .menu a{color:var(--text);opacity:.9}
+    .resume-link{display:flex;gap:10px;align-items:center;padding:8px 12px;background:linear-gradient(180deg,#1b86e5,#1678cc);border-radius:12px;color:white;box-shadow:var(--shadow)}
+
+    /* ---------- Side rails ---------- */
+    .side-left,.side-right{position:fixed;z-index:800;display:flex;flex-direction:column;align-items:center;gap:18px}
+    .side-left{left:18px;bottom:24px}
+    .side-right{right:18px;top:24px}
+    .side-left .rail,.side-right .rail{width:2px;height:130px;background:var(--line);border-radius:2px}
+    .side-left a{width:40px;height:40px;border-radius:12px;background:var(--surface);display:grid;place-items:center;color:var(--muted);box-shadow:var(--shadow);transition:.2s}
+    .side-left a:hover{transform:translateY(-3px);color:var(--text)}
+    .side-right .email{writing-mode:vertical-rl;letter-spacing:.4px;color:var(--muted)}
+
+    /* ---------- Sections ---------- */
     section{max-width:1160px;margin:0 auto;padding:90px 20px}
-    /* (rest of CSS unchanged — omitted for brevity here but KEEP YOUR FULL CSS BLOCK) */
+    .section-title{font-weight:900;font-size:34px;margin:0 0 26px}
+    .section-title.right{text-align:right}
+    .muted{color:var(--muted)}
+
+    /* ---------- Section color themes ---------- */
+    .sec{--accent:var(--accent);--accent-2:var(--accent-2)}
+    .sec-about{--accent:#e879f9;--accent-2:#a78bfa}
+    .sec-experience{--accent:#34d399;--accent-2:#10b981}
+    .sec-projects{--accent:#60a5fa;--accent-2:#22d3ee}
+    .sec-skills{--accent:#f59e0b;--accent-2:#f97316}
+    .sec-education{--accent:#f472b6;--accent-2:#fb7185}
+    .sec-contact{--accent:#4ade80;--accent-2:#a3e635}
+
+    /* Section backgrounds & top bars */
+    .sec{position:relative;background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 100%);} 
+    .sec::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));opacity:.6;}
+
+    /* ---------- Titled rows with lines ---------- */
+    .title-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;margin-bottom:26px}
+    .title-row.left{grid-template-columns:auto 1fr}
+    .title-row.right{grid-template-columns:1fr auto}
+    .title-row .line{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));opacity:.8;border-radius:2px}
+    .title-row h2{font-weight:900;font-size:34px;margin:0;color:var(--text)}
+    .title-row.left h2{justify-self:start}
+    .title-row.right h2{justify-self:end}
+    .title-row.right .line{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+
+    /* buttons & pills inherit accent better */
+    .btn{border-color:color-mix(in oklab, var(--accent) 40%, #2a3a4b);}
+    .resume-link{background:linear-gradient(180deg,var(--accent),var(--accent-2))} 
+
+    /* ---------- Hero / Home ---------- */
+    #home{min-height:84vh;display:grid;place-items:center;padding-top:120px}
+    .hero{display:grid;gap:22px;max-width:900px;text-align:center}
+    .hero h1{font-size:56px;line-height:1.05;margin:0}
+    .hero p{font-size:18px;color:#c9d6e1}
+    .cta{justify-self:center}
+    .btn{display:inline-flex;gap:10px;align-items:center;padding:12px 18px;border:1px solid #2a3a4b;background:var(--card);color:var(--text);border-radius:14px;box-shadow:var(--shadow)}
+    .btn:hover{transform:translateY(-2px)}
+
+    /* ---------- About ---------- */
+    .about-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:34px;align-items:center}
+    .about-card{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .about-photo{border-radius:var(--radius);overflow:hidden}
+
+    /* ---------- Experience ---------- */
+    .xp-list{display:grid;gap:26px}
+    .xp{display:grid;grid-template-columns:120px 1fr;gap:18px;align-items:start;background:var(--card);padding:18px;border-radius:var(--radius);border:1px solid #1c2430}
+    .xp .logo{width:100%;height:80px;border-radius:14px;background:#0f141b url('assets/company-placeholder.png') center/cover no-repeat}
+    .xp h4{margin:0;font-size:20px}
+    .xp .role{color:#cfe3f7}
+    .xp .meta{color:var(--muted);font-size:14px}
+
+    /* ---------- Projects ---------- */
+    .featured{display:grid;gap:40px}
+    .project{display:grid;grid-template-columns:1fr 1fr;gap:20px;background:var(--card);padding:18px;border-radius:var(--radius);border:1px solid #1c2430;align-items:center}
+    .project.alt{grid-template-columns:1fr 1fr;direction:rtl}
+    .project.alt > div{direction:ltr}
+    .project .shot{border-radius:14px;overflow:hidden;background:#0f141b url('assets/dashboard-placeholder.png') center/cover no-repeat;min-height:220px}
+    .project h4{margin:0 0 8px}
+    .project .links{margin-top:8px;display:flex;gap:12px}
+    .project .share{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#19212a}
+    .grid-gallery{margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .grid-gallery a{background:var(--card);border:1px solid #1c2430;border-radius:16px;overflow:hidden;display:block}
+    .grid-gallery img{aspect-ratio:16/9;width:100%;object-fit:cover}
+    .more-wrap{margin-top:26px;text-align:center}
+
+    /* ---------- Skills ---------- */
+    .skills{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:stretch}
+    .skill-detail{background:var(--card);border:1px solid #1c2430;border-radius:var(--radius);padding:20px;min-height:220px}
+    .pillbox{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start}
+    .pill{padding:10px 14px;border-radius:999px;background:#17202a;border:1px solid #223143;color:#cfe3f7;cursor:pointer}
+    .pill:hover{background:#1b2733}
+
+    /* ---------- Education ---------- */
+    .edu-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:center}
+    .edu-card{background:var(--card);border:1px solid #1c2430;border-radius:var(--radius);padding:18px}
+
+    /* ---------- Contact ---------- */
+    .contact{display:grid;grid-template-columns:1.2fr .9fr;gap:24px;align-items:center}
+    .contact .form{background:var(--card);border:1px solid #1c2430;border-radius:var(--radius);padding:18px}
+    textarea,input{width:100%;background:#0f141b;border:1px solid #273343;color:var(--text);border-radius:12px;padding:12px}
+
+    /* ---------- Footer ---------- */
+    footer{border-top:1px solid rgba(255,255,255,.06);background:var(--surface);padding:18px 20px}
+    .foot{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .sig{font-family:'Pacifico',cursive;font-size:20px;letter-spacing:1px;opacity:.9}
+
+    /* ---------- Responsive ---------- */
+    @media (max-width:1024px){
+      .about-grid,.project,.skills,.edu-grid,.contact{grid-template-columns:1fr}
+      .grid-gallery{grid-template-columns:repeat(2,1fr)}
+      .side-left,.side-right{display:none}
+      .hero h1{font-size:44px}
+    }
+    @media (max-width:640px){
+      .grid-gallery{grid-template-columns:1fr}
+      .menu{gap:14px}
+      .hero h1{font-size:36px}
+    }
   </style>
 </head>
-
 <body>
+  <!-- Preloader / Opening Icon -->
+  <div id="preloader" aria-hidden="true">
+    <div class="loader" aria-label="Loading">
+      <span class="spin-ring"></span>
+      <i class="fa-solid fa-sparkles"></i>
+    </div>
+  </div>
 
-<!-- ================= HOME ================= -->
-<section id="home">
-  <div class="hero">
-    <h1>Hi, I'm <span style="color:var(--accent)">Siri Bomma</span>.</h1>
-    <p>
-      Software Developer with nearly 5 years of experience building enterprise applications using Java, Python, and .NET Core.
-      Strong expertise in designing RESTful APIs, microservices, and cloud-based solutions on AWS and Azure.
-      Experienced in SQL and NoSQL databases, CI/CD automation, Docker, and secure coding practices.
-      Focused on delivering scalable, reliable systems that meet enterprise and regulatory standards.
-    </p>
-    <div class="cta">
-      <a class="btn" href="#contact">
-        <i class="fa-regular fa-paper-plane"></i> Get in touch
+  <!-- Side rails -->
+  <aside class="side-left" aria-label="Social links">
+    <a id="lnkLinkedIn" href="#" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    <a id="lnkGitHub" href="#" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    <a id="lnkInstagram" href="#" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <span class="rail"></span>
+  </aside>
+  <aside class="side-right" aria-label="Email rail">
+    <span class="rail"></span>
+    <a class="email" id="emailRail" href="mailto:you@example.com">you@example.com</a>
+  </aside>
+
+  <!-- Header -->
+  <header>
+    <nav class="nav">
+      <a class="brand" href="#home" aria-label="Home">
+        <i class="fa-solid fa-sparkles"></i>
+        <span>SB</span>
       </a>
-    </div>
-  </div>
-</section>
-
-<!-- ================= ABOUT ================= -->
-<section id="about" class="sec sec-about">
-  <div class="title-row right"><span class="line"></span><h2>About Me</h2></div>
-
-  <div class="about-grid">
-    <div class="about-photo">
-      <img src="me.jpeg" alt="Siri Bomma portrait"/>
-    </div>
-
-    <div class="about-card">
-      <p>
-        I am a Software Developer specializing in backend and cloud-native application development.
-        I work extensively with Java, Python, and .NET Core to build secure, high-performance systems.
-        My focus is on clean architecture, database optimization, and scalable API design.
-      </p>
-
-      <p class="muted">What you can expect from me:</p>
-      <ul>
-        <li>Strong ownership of backend services and APIs.</li>
-        <li>Performance-optimized SQL and NoSQL data layers.</li>
-        <li>Cloud-ready deployments with CI/CD automation.</li>
-        <li>Secure coding aligned with OWASP best practices.</li>
-      </ul>
-
-      <p>
-        <a id="resumeAbout" class="btn" href="#" target="_blank">
-          <i class="fa-solid fa-file-lines"></i> View Résumé
-        </a>
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= EXPERIENCE ================= -->
-<section id="experience" class="sec sec-experience">
-  <div class="title-row left"><h2>Experience</h2><span class="line"></span></div>
-
-  <div class="xp-list">
-
-    <!-- Tyler Technologies -->
-    <article class="xp">
-      <div class="logo"></div>
-      <div>
-        <h4>Tyler Technologies</h4>
-        <div class="meta"><b>Software Developer</b> — Jul 2024 – Present</div>
-        <ul>
-          <li>Built Spring Boot and Django REST APIs, improving system response time by 25%.</li>
-          <li>Migrated legacy monoliths into .NET Core 7 microservices, reducing maintenance cost and errors.</li>
-          <li>Implemented OAuth2 and JWT authentication, strengthening application security.</li>
-          <li>Automated CI/CD pipelines using GitHub Actions, Docker, and AWS EC2.</li>
-          <li>Optimized PostgreSQL queries and Redis caching, increasing throughput by 30%.</li>
-        </ul>
+      <div class="menu">
+        <a href="#about">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#education">Education</a>
+        <a href="#contact">Contact</a>
+        <a id="resumeTop" class="resume-link" href="#" target="_blank"><i class="fa-solid fa-download"></i><span>Résumé</span></a>
       </div>
-    </article>
+    </nav>
+  </header>
 
-    <!-- Mindtree -->
-    <article class="xp">
-      <div class="logo"></div>
-      <div>
-        <h4>Mindtree</h4>
-        <div class="meta"><b>Software Developer</b> — Jul 2020 – Aug 2022</div>
-        <ul>
-          <li>Developed Spring Boot, Django, and Flask microservices with 99.9% uptime.</li>
-          <li>Improved SQL Server and PostgreSQL performance by 20%.</li>
-          <li>Automated reporting using Pandas and NumPy, saving business hours monthly.</li>
-          <li>Increased test coverage to 90% using JUnit, PyTest, and Selenium.</li>
-          <li>Deployed services on AWS RDS and Azure App Services.</li>
-        </ul>
+  <!-- Home -->
+  <section id="home">
+    <div class="hero">
+      <h1>Hi, I'm <span style="color:var(--accent)">Siri Bomma</span>.</h1>
+      <p>Software Engineer with 3+ years of experience designing and delivering scalable applications in healthcare, logistics, and IoT. Skilled in Java, Spring Boot, React, and AWS, with expertise in microservices, cloud-native systems, and real-time platforms. Recognized for driving measurable improvements in performance, reliability, and customer experience. Passionate about solving complex problems and building systems that deliver long-term business value.</p>
+      <div class="cta"><a class="btn" href="#contact"><i class="fa-regular fa-paper-plane"></i> Get in touch</a></div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="sec sec-about">
+    <div class="title-row right"><span class="line"></span><h2>About Me</h2></div>
+    <div class="about-grid">
+      <div class="about-photo">
+        <img src="me.jpeg" alt="Siri Bomma portrait"/>
       </div>
-    </article>
-
-    <!-- Cognizant -->
-    <article class="xp">
-      <div class="logo"></div>
-      <div>
-        <h4>Cognizant</h4>
-        <div class="meta"><b>.NET Developer</b> — Mar 2019 – Jun 2020</div>
+      <div class="about-card">
+        <p>I specialize in building high-performance backend services, intuitive user interfaces, and data-driven platforms that improve efficiency and transparency. My engineering approach emphasizes clean architecture, scalability, and continuous delivery — enabling organizations to adapt and grow without compromising quality.</p>
+        <p class="muted">What you can expect from me:</p>
         <ul>
-          <li>Built ASP.NET MVC and .NET Core applications improving portal responsiveness by 28%.</li>
-          <li>Developed REST APIs handling JSON/XML integrations.</li>
-          <li>Optimized SQL Server queries using Entity Framework Core.</li>
-          <li>Authored NUnit tests achieving 85% coverage.</li>
-        </ul>
+            <li>End-to-end ownership of projects, from design to deployment.</li>
+            <li>Scalable, secure solutions built with modern technologies.</li>
+            <li>collaborative approach, working effectively in cross-functional teams.</li> 
+            <li>Commitment to delivering results that directly improve user experience.</li>
+          </ul>
+        <p><a id="resumeAbout" class="btn" href="#" target="_blank"><i class="fa-solid fa-file-lines"></i> View Résumé</a></p>
       </div>
-    </article>
+    </div>
+  </section>
 
-  </div>
-</section>
+  <!-- Experience -->
+  <section id="experience" class="sec sec-experience">
+    <div class="title-row left"><h2>Experience</h2><span class="line"></span></div>
+    <div class="xp-list">
+      <!-- Item 1 -->
+      <article class="xp">
+        <div class="logo" style="background-image:url('signify.webp')"></div>
+        <div>
+          <h4>Signify Health<span class="role"> </span></h4>
+          <div class="meta"><b>Software Engineer</b> -- May 2024 – Present</div>
+          <ul>
+            <li>Designed and deployed microservices on AWS (Spring Boot, RDS, Lambda), improving system reliability and reducing downtime by 25%.</li>
+            <li>Built secure REST APIs for healthcare integrations, ensuring HIPAA compliance and enabling faster data exchange across platforms.</li>
+            <li>Automated CI/CD pipelines with Docker and GitHub Actions, cutting deployment time by 40% and boosting developer productivity.</li>
+            <li>Enhanced observability with monitoring tools, reducing incident resolution time and strengthening overall platform stability.</li>
+          </ul>
+        </div>
+      </article>
+      <!-- Item 2 -->
+      <article class="xp">
+        <div class="logo" style="background-image:url('examity.jpg')"></div>
+        <div>
+          <h4>Examity <span class="role"> </span></h4>
+          <div class="meta"><b>Software Engineer</b> -- Jul 2021 – Jun 2022</div>
+          <ul>
+            <li>Developed and maintained online proctoring solutions used by 100K+ students globally. 
+            <li>Delivered real-time monitoring features with Java, React, and WebSockets, and optimized SQL queries to improve processing speed by 40%.</li> 
+            <li>Took ownership of key modules, ensuring reliability and timely feature delivery.</li>
+          </ul>
 
-<!-- ================= SKILLS ================= -->
-<section id="skills" class="sec sec-skills">
-  <div class="title-row left"><h2>Technical Skills</h2><span class="line"></span></div>
+          <div class="meta"><b>Junior Software Engineer</b> -- Jul 2020 – Jun 2021</div>
+          <ul>
+            <li>Assisted in building and refining backend services with Java Spring Boot and REST APIs.</li>
+            <li>Contributed to integrations and performance improvements while collaborating in an Agile team.</li>
+          </ul>
 
-  <div class="skills">
-    <div class="skill-detail" id="skillDetail">
-      <h4>Hover a skill →</h4>
-      <p class="muted">Move your cursor over a skill to see details.</p>
+          <div class="meta"><b>Software Engineering Intern</b> -- May 2020 – Jun 2020</div>
+          <ul>
+            <li>Supported the engineering team with bug fixes, unit testing, and automation tools, gaining hands-on experience in full-stack development and cloud deployments.</li>
+          </ul>
+        </div>
+        
+      </article>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="sec sec-projects">
+    <div class="title-row right"><span class="line"></span><h2>Projects</h2></div>
+
+    <div class="featured">
+      <!-- Featured project 1 (image left) -->
+      <article class="project">
+        <div class="shot" style="background-image:url('LiveLogistic.png')"></div>
+        <div>
+          <h4>Live Logistics Platform</h4>
+          <p>An end-to-end logistics and delivery tracking system designed to improve operational transparency and efficiency. The platform enables real-time shipment tracking with ETA predictions, integrates Google Maps for route visualization, and provides role-based dashboards for customers, couriers, and administrators. Built on a scalable architecture, it supports live updates through WebSockets and ensures seamless data management with PostgreSQL.</p>
+          <div class="links">
+            <a class="btn" href="https://github.com/SiriBomma-developer/live-logistics-platform" target="_blank"><i class="fa-brands fa-github"></i> Repo</a>
+            <a class="share" href="https://github.com/SiriBomma-developer/live-logistics-platform" target="_blank" aria-label="Share on GitHub"><i class="fa-solid fa-share-nodes"></i></a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Featured project 2 (text left) -->
+      <article class="project alt">
+        <div class="shot" style="background-image:url('AgriSenseDashboard.png')"></div>
+        <div>
+          <h4>CropTrack-Live</h4>
+          <p>An IoT-based agriculture monitoring system focused on data-driven farm management. The solution collects live data from field sensors via MQTT, storing and analyzing time-series data in TimescaleDB. Farmers access interactive dashboards that visualize temperature, humidity, and soil moisture, while an AI-driven irrigation scheduler optimizes water usage by up to 30%. Automated alerts notify users of threshold breaches, enabling smarter, real-time decision-making.</p>
+          <div class="links">
+            <a class="btn" href="https://github.com/SiriBomma-developer/CropTrack-Live" target="_blank"><i class="fa-brands fa-github"></i> Repo</a>
+            <a class="share" href="https://github.com/SiriBomma-developer/CropTrack-Live" target="_blank" aria-label="Share on GitHub"><i class="fa-solid fa-share-nodes"></i></a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Featured project 3 (image left) -->
+      <article class="project">
+        <div class="shot" style="background-image:url('SwiftParcel.png')"></div>
+        <div>
+          <h4>SwiftParcel Manager</h4>
+          <p>A parcel management dashboard built for delivery companies to streamline shipment tracking and courier assignments. The platform provides real-time visibility into package status, delivery progress, and courier performance metrics through a modern web-based interface.</p>
+          <div class="links">
+            <a class="btn" href="https://github.com/SiriBomma-developer/SwiftParcel-Manager" target="_blank"><i class="fa-brands fa-github"></i> Repo</a>
+            <a class="share" href="https://github.com/SiriBomma-developer/SwiftParcel-Manager" target="_blank" aria-label="Share on GitHub"><i class="fa-solid fa-share-nodes"></i></a>
+          </div>
+        </div>
+      </article>
     </div>
 
-    <div class="pillbox" id="skillList">
-      <span class="pill" data-desc="Enterprise backend development using Spring Boot, JDK 17+, and microservices.">Java</span>
-      <span class="pill" data-desc="Backend development with Django and Flask for scalable APIs and services.">Python</span>
-      <span class="pill" data-desc="Building REST APIs and services using .NET Core.">C# / .NET Core</span>
-      <span class="pill" data-desc="Designing secure, scalable RESTful APIs.">REST APIs</span>
-      <span class="pill" data-desc="Database optimization and performance tuning for relational systems.">PostgreSQL / SQL Server</span>
-      <span class="pill" data-desc="Cloud deployments using EC2, S3, Lambda, and Azure services.">AWS / Azure</span>
-      <span class="pill" data-desc="Containerized deployments and CI/CD automation.">Docker / CI-CD</span>
-      <span class="pill" data-desc="Secure authentication using OAuth2 and JWT.">OAuth2 / JWT</span>
-      <span class="pill" data-desc="Automated testing using JUnit, PyTest, NUnit, Selenium.">Testing</span>
+    <!-- Other notable projects gallery -->
+    <div class="grid-gallery">
+      <a href="https://github.com/SiriBomma-developer/FleetPath-Live" target="_blank" aria-label="FleetPath Live"><img src="FleetPath.png" alt="FleetPath Live"/></a>
+      <a href="https://github.com/SiriBomma-developer/CropCare-Sensor-Hub" target="_blank" aria-label="CropCare Sensor Hub"><img src="CropCare.png" alt="CropCare Sensor Hub"/></a>
+      <a href="https://github.com/SiriBomma-developer/WebAPI" target="_blank" aria-label="WebAPI"><img src="webapi.png" alt="WebAPI"/></a>
+      <a href="https://github.com/SiriBomma-developer/E-Commerce-website-using-html-css-Js" target="_blank" aria-label="E-Commerce Website"><img src="e-commerce.png" alt="E-Commerce Website"/></a>
     </div>
-  </div>
-</section>
+    <div class="more-wrap"><a class="btn" id="moreProjects" href="https://github.com/SiriBomma-developer?tab=repositories" target="_blank"><i class="fa-brands fa-github"></i> More projects</a></div>
+  </section>
 
-<!-- ================= EDUCATION ================= -->
-<section id="education" class="sec sec-education">
-  <div class="title-row right"><span class="line"></span><h2>Education</h2></div>
+  <!-- Skills -->
+  <section id="skills" class="sec sec-skills">
+    <div class="title-row left"><h2>Technical Skills</h2><span class="line"></span></div>
+    <div class="skills">
+      <div class="skill-detail" id="skillDetail">
+        <h4>Hover a skill →</h4>
+        <p class="muted">Move your cursor over a skill on the right to see a short description here.</p>
+      </div>
+      <div class="pillbox" id="skillList">
+        <span class="pill" data-desc="Proficient in Java for building enterprise-grade backend systems. Applied extensively with Spring Boot to develop microservices and REST APIs that process high-volume requests with reliability and performance.">Java</span>
+        <span class="pill" data-desc="Experienced in Python for backend development, automation, and API design. Used FastAPI to build lightweight services and Pandas/NumPy for data-driven applications.">Python</span>
+        <span class="pill" data-desc="Strong foundation in C++ from solving algorithmic and performance-critical problems. Applied knowledge in system-level programming and data structure implementations.">C++</span>
+        <span class="pill" data-desc="Hands-on with JavaScript to create dynamic web applications and dashboards, focusing on responsive, interactive client-side features.">JavaScript</span>
+        <span class="pill" data-desc="Applied in frontend projects to bring type safety and maintainability, ensuring large-scale React and Next.js applications are reliable and easy to extend.">TypeScript</span>
 
-  <div class="edu-grid">
-    <div class="edu-card">
-      <h4>Master of Science in Information Science</h4>
-      <h4>University of North Texas</h4>
-      <p>Aug 2022 – May 2024</p>
+        <span class="pill" data-desc="Core framework used for developing scalable microservices and APIs. Delivered production services in healthcare and logistics systems with strong security and modular design.">Spring Boot</span>
+        <span class="pill" data-desc="Used to create high-performance APIs for IoT dashboards and data processing services. Ideal for rapid development with Python while maintaining performance and reliability.">FastAPI</span>
+        <span class="pill" data-desc="Experience in building event-driven backend services for lightweight modules, integrations, and real-time applications requiring asynchronous communication.">Node.js</span>
+        <span class="pill" data-desc="Designed and maintained secure, reusable APIs that integrate multiple systems. Ensured performance, documentation, and long-term maintainability of service endpoints.">REST APIs</span>
+        <span class="pill" data-desc="Exposure to GraphQL for client-optimized data fetching, reducing network overhead and enabling more flexible API usage.">GraphQL</span>
+
+        <span class="pill" data-desc="Developed interactive dashboards and UIs for logistics and proctoring platforms. Focused on reusable components and integration with backend APIs for seamless UX.">React.js</span>
+        <span class="pill" data-desc="Built server-side rendered applications for high-performance, SEO-friendly platforms. Leveraged static generation for faster load times and optimized web delivery.">Next.js</span>
+        <span class="pill" data-desc="Applied React Native in cross-platform prototypes, extending frontend skills into mobile app development while reusing code and logic.">React Native</span>
+        <span class="pill" data-desc="Created responsive, accessible, and cross-browser compatible layouts. Applied CSS frameworks and flexbox/grid systems for modern UI styling.">HTML5 / CSS3</span>
+        <span class="pill" data-desc="Worked extensively with relational database schemas and optimized SQL queries to support large-scale logistics and healthcare applications.">PostgreSQL</span>
+
+        <span class="pill" data-desc="Implemented transactional workflows with MySQL, focusing on reliable storage and normalization for structured data requirements.">MySQL</span>
+        <span class="pill" data-desc="Applied NoSQL concepts for schema-flexible projects, enabling fast iteration and storage of dynamic, unstructured data.">MongoDB</span>
+        <span class="pill" data-desc="Used as an in-memory cache to improve response times and handle high-volume application workloads efficiently.">Redis</span>
+        <span class="pill" data-desc="Deployed services to AWS cloud environments, leveraging EC2 for compute, S3 for secure storage, and RDS for managed databases.">AWS</span>
+        <span class="pill" data-desc="Containerized applications to create consistent environments across development, testing, and production. Simplified deployments and reduced dependency issues.">Docker</span>
+
+        <span class="pill" data-desc="Basic experience orchestrating containerized workloads in Kubernetes clusters, enabling auto-scaling and service discovery.">Kubernetes</span>
+        <span class="pill" data-desc="Automated pipelines for build, test, and deployment processes, reducing release times and ensuring reliable, frequent software delivery.">CI/CD</span>
+        <span class="pill" data-desc="Collaborated effectively with version control using branching strategies, pull requests, and reviews to maintain clean, stable codebases.">Git / GitHub</span>
+        <span class="pill" data-desc="Worked within Agile frameworks, using Jira for sprint planning, backlog tracking, and transparent progress reporting in cross-functional teams.">Jira / Agile</span>
+        <span class="pill" data-desc="Practical experience designing scalable architectures for real-time dashboards and logistics tracking systems. Applied concepts like caching, database partitioning, and event-driven communication.">System Design</span>
+        </div>
+
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ================= CONTACT ================= -->
-<section id="contact" class="sec sec-contact">
-  <div class="title-row left"><h2>Get In Touch</h2><span class="line"></span></div>
-
-  <div class="contact">
-    <div class="about-card">
-      <p>
-        Email:
-        <a href="mailto:siribommadev@gmail.com">siribommadev@gmail.com</a>
-      </p>
-      <p>
-        GitHub:
-        <a href="https://github.com/SiriBomma-developer" target="_blank">SiriBomma-developer</a>
-      </p>
-      <p>
-        LinkedIn:
-        <a href="https://www.linkedin.com/in/siribomma/" target="_blank">siribomma</a>
-      </p>
+  <!-- Education -->
+  <section id="education" class="sec sec-education">
+    <div class="title-row right"><span class="line"></span><h2>Education</h2></div>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <h4>Master of Science in Information Systems</h4>
+        <h4>University of North Texas - GPA: 3.7</h4>
+        <p>Aug 2022 – May 2024</p>
+      </div>
+      <div class="about-photo">
+        <img src="unt.jpg" alt="UNT campus"/>
+      </div>
     </div>
-  </div>
-</section>
+    <div style="height:22px"></div>
+    <div class="edu-grid" style="grid-template-columns:1.2fr 1fr">
+      <div class="about-photo">
+        <img src="bits.jpeg" alt="BITS Narsampet"/>
+      </div>
+      <div class="edu-card">
+        <h4>Bachelor of Technology</h4>
+        <h4>Balaji Institute of Technology & Sciences - GPA: 3.4</h4>
+        <p>Jul 2017 – May 2021</p>
+      </div>
+    </div>
+  </section>
 
-<footer>
-  <div class="foot">
-    <span class="muted">© <span id="year"></span> Siri Bomma</span>
-    <span class="sig">Siri Bomma</span>
-  </div>
-</footer>
+  <!-- Contact -->
+  <section id="contact" class="sec sec-contact">
+    <div class="title-row left"><h2>Get In Touch</h2><span class="line"></span></div>
+    <div class="contact">
+      <div class="form">
+        <label for="msg" class="muted">Your Message</label>
+        <textarea id="msg" rows="7" placeholder="Type your message here..."></textarea>
+        <div style="height:12px"></div>
+        <button id="sendBtn" class="btn"><i class="fa-regular fa-paper-plane"></i> Send</button>
+      </div>
+      <div class="about-card">
+        <p>If you would like to work together or discuss an opportunity, use the form or email me at <a id="emailInline" href="mailto:siribommadev@gmail.com">siribommadev@gmail.com</a>.</p>
+      </div>
+    </div>
+  </section>
 
-<script>
-  document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+  <footer>
+    <div class="foot">
+      <span class="muted">© <span id="year"></span> Siri Bomma</span>
+      <span class="sig">Siri Bomma</span>
+    </div>
+  </footer>
 
+  <script>
+    // -------- Hard-cap preloader to 2 seconds with fade-out --------
+    (function(){
+      const done = () => {
+        const pre = document.getElementById('preloader');
+        if(!pre) return;
+        pre.classList.add('fade-out');
+        setTimeout(()=> pre.remove(), 600);
+      };
+      // Fire the cap immediately so it's independent of asset loading
+      setTimeout(done, 2000);
+      // Also hide on load if it happens earlier than 2s
+      window.addEventListener('load', done, { once:true });
+    })();
+
+    // -------- Year --------
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // -------- Configurable links (EDIT THESE) --------
+    const LINKS = {
+      resume: 'SiriBomma_Resume.pdf',
+      email: 'siribommadev@gmail.com',
+      linkedin: 'https://www.linkedin.com/in/siribomma/',
+      github: 'https://github.com/SiriBomma-developer',
+      instagram: 'https://www.instagram.com/_siribomma_/?next=%2F&hl=en',
+      moreProjects: 'https://github.com/SiriBomma-developer?tab=repositories'
+    };
+
+    document.querySelectorAll('#resumeTop, #resumeAbout').forEach(a=>a.href = LINKS.resume);
+    document.getElementById('emailRail').href = 'mailto:'+LINKS.email;
+    document.getElementById('emailRail').textContent = LINKS.email;
+    document.getElementById('emailInline').href = 'mailto:'+LINKS.email;
+    document.getElementById('emailInline').textContent = LINKS.email;
+    document.getElementById('lnkLinkedIn').href = LINKS.linkedin;
+    document.getElementById('lnkGitHub').href = LINKS.github;
+    document.getElementById('lnkInstagram').href = LINKS.instagram;
+    document.getElementById('moreProjects').href = LINKS.moreProjects;
+
+    // -------- Skill hover descriptions --------
+    const detail = document.getElementById('skillDetail');
+    document.getElementById('skillList').addEventListener('mouseover', e =>{
+      const pill = e.target.closest('.pill');
+      if(!pill) return;
+      detail.innerHTML = `<h4>${pill.textContent}</h4><p class="muted">${pill.dataset.desc}</p>`;
+    });
+
+    // -------- Contact (mailto fallback) --------
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      const body = encodeURIComponent(document.getElementById('msg').value.trim());
+      window.location.href = `mailto:${LINKS.email}?subject=Portfolio%20Contact&body=${body}`;
+    });
+  </script>
 </body>
 </html>
