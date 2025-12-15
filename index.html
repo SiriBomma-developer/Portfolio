@@ -445,13 +445,14 @@
 
     // -------- Configurable links --------
     const LINKS = {
-      resume: 'SiriBomma_SD.pdf',
+      resume: '/Portfolio/SiriBomma_SD.pdf',
       email: 'siribomma.dev@gmail.com',
       linkedin: 'https://www.linkedin.com/in/siribomma/',
       github: 'https://github.com/SiriBomma-developer',
       instagram: 'https://www.instagram.com/_siribomma_/?next=%2F&hl=en',
       moreProjects: 'https://github.com/SiriBomma-developer?tab=repositories'
     };
+
 
     document.querySelectorAll('#resumeTop, #resumeAbout').forEach(a=>a.href = LINKS.resume);
     document.getElementById('emailRail').href = 'mailto:'+LINKS.email;
